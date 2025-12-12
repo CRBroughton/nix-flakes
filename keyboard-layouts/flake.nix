@@ -11,6 +11,7 @@
         with lib;
         let
           cfg = config.programs.keyboard-layouts;
+          inherit (lib.hm.gvariant) mkTuple;
 
           layoutType = types.submodule {
             options = {
@@ -136,7 +137,7 @@
           };
 
           config = mkIf cfg.enable {
-            # Install XKB symbol files for each layout
+            # Install XKB symbol files for each layout and evdev.xml rules file
             home.file = listToAttrs (
               map (layout: {
                 name = ".config/xkb/symbols/${layout.name}";
@@ -144,10 +145,9 @@
                   source = layout.symbolsFile;
                 };
               }) cfg.layouts
-            );
-
-            # Generates and install evdev.xml rules file
-            home.file.".config/xkb/rules/evdev.xml".source = evdevXmlFile;
+            ) // {
+              ".config/xkb/rules/evdev.xml".source = evdevXmlFile;
+            };
 
             # Configure GNOME/KDE to recognise the layouts
             dconf.settings = {
