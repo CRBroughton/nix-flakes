@@ -5,6 +5,7 @@ A reusable Nix flake for installing and configuring Podman with Docker compatibi
 ## Features
 
 - Installs Podman and podman-compose
+- Installs and configures lazydocker (enabled by default)
 - Configures container registries for short names (e.g., `podman run hello-world`)
 - Sets up Docker socket compatibility via systemd
 - Configurable trust policies for container images
@@ -47,22 +48,14 @@ programs.podman-config = {
 
   package = pkgs.podman;  # Override podman package if needed
 
-  enableDockerCompat = true;  # Enable Docker socket compatibility
+  enableDockerCompat = true;  # Enable Docker socket compatibility (default: true)
 
   registries = [ "docker.io" ];  # Container registries for short names
 
-  enableSystemdService = true;  # Enable Podman API systemd service
+  enableSystemdService = true;  # Enable Podman API systemd service (default: true)
+
+  enableLazydocker = true;  # Install and configure lazydocker (default: true)
 };
-```
-
-### With lazydocker
-
-This flake works great with lazydocker. Just configure lazydocker to use podman-compose:
-
-```yaml
-# ~/.config/lazydocker/config.yml
-commandTemplates:
-  dockerCompose: podman-compose
 ```
 
 ## What it configures
@@ -84,13 +77,64 @@ commandTemplates:
    - Automatically starts Podman API service
    - Socket-activated for efficiency
 
+5. **Lazydocker Configuration** (`~/.config/lazydocker/config.yml`)
+   - Automatically configures lazydocker to use podman-compose
+   - Works seamlessly with Podman containers
+
+## Prerequisites
+
+### On Non-NixOS Systems (Ubuntu, Debian, Raspberry Pi OS, etc.)
+
+Podman requires `newuidmap` and `newgidmap` utilities with setuid permissions for rootless operation. These **must** be installed via your system package manager:
+
+```bash
+# Ubuntu/Debian/Raspberry Pi OS
+sudo apt install uidmap
+
+# Fedora
+sudo dnf install shadow-utils
+
+# Arch
+sudo pacman -S shadow
+```
+
+**Why?** The Nix-provided versions cannot have the setuid bit set, which is required for user namespace mapping. The system-provided versions have the correct permissions.
+
+### Verify Prerequisites
+
+After installing `uidmap`, verify the setuid bit is set:
+
+```bash
+ls -l /usr/bin/newuidmap /usr/bin/newgidmap
+```
+
+You should see `-rwsr-xr-x` (note the `s` in the permissions).
+
+## Post-Installation
+
+After running `home-manager switch`, you need to:
+
+1. **Restart your shell** to load the `DOCKER_HOST` environment variable:
+   ```bash
+   exec $SHELL
+   ```
+   Or log out and log back in.
+
+2. **Start the podman socket** (if not already running):
+   ```bash
+   systemctl --user start podman.socket
+   ```
+
 ## Testing
 
-After installation, test with:
+After installation and restarting your shell, test with:
 
 ```bash
 # Test podman
 podman run hello-world
+
+# Test lazydocker
+lazydocker
 
 # Test Docker socket compatibility
 docker ps  # Should work if Docker CLI uses DOCKER_HOST
@@ -99,3 +143,89 @@ docker ps  # Should work if Docker CLI uses DOCKER_HOST
 systemctl --user status podman.socket
 systemctl --user status podman.service
 ```
+
+## Troubleshooting
+
+### Error: "newuidmap: write to uid_map failed: Operation not permitted"
+
+This means the system `uidmap` package is not installed. Install it:
+
+```bash
+sudo apt install uidmap
+```
+
+Then verify subuid/subgid mappings exist:
+
+```bash
+cat /etc/subuid
+cat /etc/subgid
+```
+
+You should see entries like:
+```
+yourusername:100000:65536
+```
+
+If these files are empty or missing your user, add them:
+
+```bash
+sudo usermod --add-subuids 100000-165535 --add-subgids 100000-165535 $USER
+```
+
+### Failed services: podman.socket, podman.service
+
+The services may fail on first activation. Try manually starting them:
+
+```bash
+systemctl --user start podman.socket
+systemctl --user start podman.service
+```
+
+Or restart them after `home-manager switch`:
+
+```bash
+systemctl --user daemon-reload
+systemctl --user restart podman.socket podman.service
+```
+
+### Lazydocker error: "getting the docker.sock. is the docker daemon running?"
+
+This means the Podman socket isn't available to lazydocker. Check these:
+
+1. **Verify the `DOCKER_HOST` environment variable is set:**
+   ```bash
+   echo $DOCKER_HOST
+   ```
+   Should output: `unix:///run/user/1000/podman/podman.sock` (or your UID)
+
+   If not set, you can run lazydocker with the environment variable set directly:
+   ```bash
+   DOCKER_HOST="unix:///run/user/$UID/podman/podman.sock" lazydocker
+   ```
+
+   Or restart your shell to load the variable:
+   ```bash
+   exec $SHELL
+   ```
+
+2. **Check if the podman socket exists:**
+   ```bash
+   ls -l /run/user/$UID/podman/podman.sock
+   ```
+
+3. **Verify the systemd socket is running:**
+   ```bash
+   systemctl --user status podman.socket
+   ```
+
+4. **If the socket isn't running, start it:**
+   ```bash
+   systemctl --user start podman.socket
+   systemctl --user enable podman.socket
+   ```
+
+5. **Test the socket works:**
+   ```bash
+   curl --unix-socket /run/user/$UID/podman/podman.sock http://localhost/_ping
+   ```
+   Should respond with `OK`

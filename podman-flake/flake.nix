@@ -61,6 +61,12 @@
               default = true;
               description = "Enable Podman API systemd socket and service";
             };
+
+            enableLazydocker = lib.mkOption {
+              type = lib.types.bool;
+              default = true;
+              description = "Enable lazydocker with podman-compose configuration";
+            };
           };
 
           config = lib.mkIf config.programs.podman-config.enable {
@@ -68,6 +74,8 @@
             home.packages = [
               config.programs.podman-config.package
               pkgs.podman-compose
+            ] ++ lib.optionals config.programs.podman-config.enableLazydocker [
+              pkgs.lazydocker
             ];
 
             # Podman container registries configuration
@@ -101,6 +109,36 @@
             # Set up environment variable for Docker compatibility with Podman
             home.sessionVariables = lib.mkIf config.programs.podman-config.enableDockerCompat {
               DOCKER_HOST = "unix:///run/user/$UID/podman/podman.sock";
+            };
+
+            # Also set DOCKER_HOST in shell profiles for immediate availability
+            programs.bash.sessionVariables = lib.mkIf config.programs.podman-config.enableDockerCompat {
+              DOCKER_HOST = "unix:///run/user/$UID/podman/podman.sock";
+            };
+
+            programs.zsh.sessionVariables = lib.mkIf config.programs.podman-config.enableDockerCompat {
+              DOCKER_HOST = "unix:///run/user/$UID/podman/podman.sock";
+            };
+
+            programs.fish.shellInit = lib.mkIf config.programs.podman-config.enableDockerCompat ''
+              set -gx DOCKER_HOST "unix:///run/user/$UID/podman/podman.sock"
+            '';
+
+            # Configure lazydocker to use podman-compose
+            home.file.".config/lazydocker/config.yml" = lib.mkIf config.programs.podman-config.enableLazydocker {
+              text = ''
+                gui:
+                  theme:
+                    activeBorderColor:
+                      - yellow
+                      - bold
+                    optionsTextColor:
+                      - yellow
+                      - bold
+                  sidePanelWidth: 0.33
+                commandTemplates:
+                  dockerCompose: podman-compose
+              '';
             };
 
             # Create systemd socket and service for Podman API
