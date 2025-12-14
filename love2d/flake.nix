@@ -26,7 +26,7 @@
 
           config = mkIf cfg.enable {
             home.packages = [
-              (pkgs.lua.withPackages (ps: [ ps.love ]))
+              pkgs.love
             ];
 
             programs.vscode.profiles.default.extensions = with pkgs.vscode-marketplace; [
