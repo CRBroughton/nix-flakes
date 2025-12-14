@@ -5,9 +5,16 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
   };
 
-  outputs = { self, nixpkgs }:
+  outputs =
+    { self, nixpkgs }:
     {
-      homeManagerModules.default = { config, lib, pkgs, ... }:
+      homeManagerModules.default =
+        {
+          config,
+          lib,
+          pkgs,
+          ...
+        }:
         with lib;
         let
           cfg = config.programs.fish-shell;
@@ -35,13 +42,13 @@
 
             # CLI tools
             home.packages = [
-              pkgs.bat    # Better cat
-              pkgs.eza    # Better ls
-              pkgs.btop   # System monitor
+              pkgs.bat # Better cat
+              pkgs.eza # Better ls
+              pkgs.btop # System monitor
             ];
 
             # Helpful activation message
-            home.activation.fishShellInfo = lib.hm.dag.entryAfter ["writeBoundary"] ''
+            home.activation.fishShellInfo = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
               echo "Fish shell environment installed with:"
               echo "  - Fish shell"
               echo "  - Starship prompt"

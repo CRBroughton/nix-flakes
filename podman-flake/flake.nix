@@ -74,7 +74,8 @@
             home.packages = [
               config.programs.podman-config.package
               pkgs.podman-compose
-            ] ++ lib.optionals config.programs.podman-config.enableLazydocker [
+            ]
+            ++ lib.optionals config.programs.podman-config.enableLazydocker [
               pkgs.lazydocker
             ];
 
@@ -125,21 +126,23 @@
             '';
 
             # Configure lazydocker to use podman-compose
-            home.file.".config/lazydocker/config.yml" = lib.mkIf config.programs.podman-config.enableLazydocker {
-              text = ''
-                gui:
-                  theme:
-                    activeBorderColor:
-                      - yellow
-                      - bold
-                    optionsTextColor:
-                      - yellow
-                      - bold
-                  sidePanelWidth: 0.33
-                commandTemplates:
-                  dockerCompose: podman-compose
-              '';
-            };
+            home.file.".config/lazydocker/config.yml" =
+              lib.mkIf config.programs.podman-config.enableLazydocker
+                {
+                  text = ''
+                    gui:
+                      theme:
+                        activeBorderColor:
+                          - yellow
+                          - bold
+                        optionsTextColor:
+                          - yellow
+                          - bold
+                      sidePanelWidth: 0.33
+                    commandTemplates:
+                      dockerCompose: podman-compose
+                  '';
+                };
 
             # Create systemd socket and service for Podman API
             # This works on all systems, whether Podman is from Nix or system packages

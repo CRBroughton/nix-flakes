@@ -5,9 +5,16 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
   };
 
-  outputs = { self, nixpkgs }:
+  outputs =
+    { self, nixpkgs }:
     {
-      homeManagerModules.default = { config, lib, pkgs, ... }:
+      homeManagerModules.default =
+        {
+          config,
+          lib,
+          pkgs,
+          ...
+        }:
         with lib;
         let
           cfg = config.programs.keyboard-layouts;
@@ -50,21 +57,24 @@
           };
 
           # Generates evdev.xml content from layout definitions
-          generateEvdevXml = layouts:
+          generateEvdevXml =
+            layouts:
             let
               mkLayoutEntry = layout: ''
-                    <layout>
-                      <configItem>
-                        <name>${layout.name}</name>
-                        ${optionalString (layout.shortDescription != "") "<shortDescription>${layout.shortDescription}</shortDescription>"}
-                        <description>${layout.description}</description>
-                        ${optionalString (layout.languages != []) ''
-                        <languageList>
-                          ${concatStringsSep "\n          " (map (lang: "<iso639Id>${lang}</iso639Id>") layout.languages)}
-                        </languageList>
-                        ''}
-                      </configItem>
-                    </layout>
+                <layout>
+                  <configItem>
+                    <name>${layout.name}</name>
+                    ${optionalString (
+                      layout.shortDescription != ""
+                    ) "<shortDescription>${layout.shortDescription}</shortDescription>"}
+                    <description>${layout.description}</description>
+                    ${optionalString (layout.languages != [ ]) ''
+                      <languageList>
+                        ${concatStringsSep "\n          " (map (lang: "<iso639Id>${lang}</iso639Id>") layout.languages)}
+                      </languageList>
+                    ''}
+                  </configItem>
+                </layout>
               '';
             in
             pkgs.writeText "evdev.xml" ''
@@ -78,11 +88,22 @@
             '';
 
           # Generates dconf tuples for custom layouts
-          mkLayoutTuple = layout: mkTuple [ "xkb" layout.name ];
+          mkLayoutTuple =
+            layout:
+            mkTuple [
+              "xkb"
+              layout.name
+            ];
           customLayoutTuples = map mkLayoutTuple cfg.layouts;
 
           # Generates dconf tuples for standard layouts
-          standardLayoutTuples = map (layout: mkTuple [ "xkb" layout ]) cfg.standardLayouts;
+          standardLayoutTuples = map (
+            layout:
+            mkTuple [
+              "xkb"
+              layout
+            ]
+          ) cfg.standardLayouts;
 
           evdevXmlFile = generateEvdevXml cfg.layouts;
 
@@ -93,7 +114,7 @@
 
             layouts = mkOption {
               type = types.listOf layoutType;
-              default = [];
+              default = [ ];
               description = ''
                 List of custom keyboard layouts to install.
                 Each layout should include:
@@ -123,7 +144,10 @@
                 Standard keyboard layouts to include (e.g., "us", "gb", "de").
                 These will be added before the custom layouts in GNOME/KDE.
               '';
-              example = [ "us" "gb" ];
+              example = [
+                "us"
+                "gb"
+              ];
             };
 
             xkbOptions = mkOption {
@@ -132,22 +156,27 @@
               description = ''
                 XKB options to apply globally.
               '';
-              example = [ "terminate:ctrl_alt_bksp" "caps:escape" ];
+              example = [
+                "terminate:ctrl_alt_bksp"
+                "caps:escape"
+              ];
             };
           };
 
           config = mkIf cfg.enable {
             # Install XKB symbol files for each layout and evdev.xml rules file
-            home.file = listToAttrs (
-              map (layout: {
-                name = ".config/xkb/symbols/${layout.name}";
-                value = {
-                  source = layout.symbolsFile;
-                };
-              }) cfg.layouts
-            ) // {
-              ".config/xkb/rules/evdev.xml".source = evdevXmlFile;
-            };
+            home.file =
+              listToAttrs (
+                map (layout: {
+                  name = ".config/xkb/symbols/${layout.name}";
+                  value = {
+                    source = layout.symbolsFile;
+                  };
+                }) cfg.layouts
+              )
+              // {
+                ".config/xkb/rules/evdev.xml".source = evdevXmlFile;
+              };
 
             # Configure GNOME/KDE to recognise the layouts
             dconf.settings = {
@@ -158,7 +187,7 @@
             };
 
             # Helpful activation message
-            home.activation.keyboardLayoutsInfo = lib.hm.dag.entryAfter ["writeBoundary"] ''
+            home.activation.keyboardLayoutsInfo = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
               echo "Custom keyboard layouts installed:"
               ${concatStringsSep "\n" (map (layout: "echo \"  - ${layout.description}\"") cfg.layouts)}
               echo ""

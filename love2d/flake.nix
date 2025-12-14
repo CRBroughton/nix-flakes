@@ -5,9 +5,16 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
   };
 
-  outputs = { self, nixpkgs }:
+  outputs =
+    { self, nixpkgs }:
     {
-      homeManagerModules.default = { config, lib, pkgs, ... }:
+      homeManagerModules.default =
+        {
+          config,
+          lib,
+          pkgs,
+          ...
+        }:
         with lib;
         let
           cfg = config.programs.love2d;
@@ -27,7 +34,7 @@
             ];
 
             # Helpful activation message
-            home.activation.love2dInfo = lib.hm.dag.entryAfter ["writeBoundary"] ''
+            home.activation.love2dInfo = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
               echo "LÖVE 2D development environment installed with:"
               echo "  - LÖVE 2D game engine"
               echo "  - VSCode extension: LÖVE"
