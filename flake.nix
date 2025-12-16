@@ -5,14 +5,14 @@
     templates = {
       clojure = {
         path = ./clojure;
-        description = "Clojure development environment with JDK 25";
+        description = "Clojure development environment with JDK 25 and VS Code integration";
         welcomeText = ''
           # Clojure Development Environment
 
           This template provides a Nix flake for Clojure development with:
           - Clojure CLI tools (clj)
           - JDK 25 (headless)
-          - Git
+          - VS Code extension (Calva)
 
           ## Usage
 
@@ -21,10 +21,7 @@
           nix develop
           ```
 
-          To build the environment package:
-          ```
-          nix build
-          ```
+          To use as a Home Manager module, add to your flake inputs and modules.
         '';
       };
 

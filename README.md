@@ -52,7 +52,7 @@ This is useful for:
 
 ### Available Templates
 
-- `clojure` - Clojure development environment with JDK 25
+- `clojure` - Clojure development environment with JDK 25 and VS Code integration
 - `elixir` - Elixir development environment with Erlang 28 and Elixir 1.19
 - `lua` - Lua development environment with common libraries and LSP
 - `nim` - Nim development environment with VS Code integration
@@ -64,7 +64,7 @@ This is useful for:
 
 ## Flakes
 
-- [clojure](clojure/) - Clojure development environment with JDK 25
+- [clojure](clojure/) - Clojure development environment with JDK 25 and VS Code integration via Home Manager
 - [elixir](elixir/) - Elixir development environment with Erlang 28 and Elixir 1.19
 - [lua](lua/) - Lua development environment with essential packages and testing tools via Home Manager
 - [nim](nim/) - Nim development environment with VS Code integration via Home Manager
