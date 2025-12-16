@@ -40,6 +40,7 @@
         # We construct a Nim development environment with the compiler and tools.
         devPackages = [
           pkgs.nim
+          pkgs.nimlangserver
         ];
 
         # [Step B] Create an "Installable" Environment (CRITICAL CONCEPT)
