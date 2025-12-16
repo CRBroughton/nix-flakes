@@ -3,6 +3,31 @@
 
   outputs = { self }: {
     templates = {
+      clojure = {
+        path = ./clojure;
+        description = "Clojure development environment with JDK 25";
+        welcomeText = ''
+          # Clojure Development Environment
+
+          This template provides a Nix flake for Clojure development with:
+          - Clojure CLI tools (clj)
+          - JDK 25 (headless)
+          - Git
+
+          ## Usage
+
+          To enter the development shell:
+          ```
+          nix develop
+          ```
+
+          To build the environment package:
+          ```
+          nix build
+          ```
+        '';
+      };
+
       elixir = {
         path = ./elixir;
         description = "Elixir development environment with Erlang 28 and Elixir 1.19";
@@ -38,6 +63,27 @@
           - Lua interpreter with pre-loaded libraries (cjson, luafilesystem, luasocket, etc.)
           - lua-language-server
           - VS Code integration
+
+          ## Usage
+
+          To enter the development shell:
+          ```
+          nix develop
+          ```
+
+          To use as a Home Manager module, add to your flake inputs and modules.
+        '';
+      };
+
+      nim = {
+        path = ./nim;
+        description = "Nim development environment with VS Code integration";
+        welcomeText = ''
+          # Nim Development Environment
+
+          This template provides a Nix flake for Nim development with:
+          - Nim compiler and tools
+          - VS Code extension (nimsaem.nimvscode)
 
           ## Usage
 

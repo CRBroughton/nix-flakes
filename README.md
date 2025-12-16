@@ -31,10 +31,31 @@ Use the default template (elixir):
 nix flake init -t github:crbroughton/nix-flakes
 ```
 
+### Use a Template Without Initialising
+
+You can enter a development shell directly from a remote template without copying files:
+
+```bash
+# Using the path to the subdirectory flake
+nix develop github:crbroughton/nix-flakes?dir=elixir
+
+# Or for other templates
+nix develop github:crbroughton/nix-flakes?dir=clojure
+nix develop github:crbroughton/nix-flakes?dir=nim
+nix develop github:crbroughton/nix-flakes?dir=lua
+```
+
+This is useful for:
+- Testing a template before initialising it
+- Quick one-off development sessions
+- Trying out different environments without cluttering your project
+
 ### Available Templates
 
+- `clojure` - Clojure development environment with JDK 25
 - `elixir` - Elixir development environment with Erlang 28 and Elixir 1.19
 - `lua` - Lua development environment with common libraries and LSP
+- `nim` - Nim development environment with VS Code integration
 - `fish-shell` - Fish shell configuration
 - `frontend-tools` - Frontend development tools
 - `keyboard-layouts` - Custom keyboard layouts configuration
@@ -43,6 +64,8 @@ nix flake init -t github:crbroughton/nix-flakes
 
 ## Flakes
 
+- [clojure](clojure/) - Clojure development environment with JDK 25
 - [elixir](elixir/) - Elixir development environment with Erlang 28 and Elixir 1.19
 - [lua](lua/) - Lua development environment with essential packages and testing tools via Home Manager
+- [nim](nim/) - Nim development environment with VS Code integration via Home Manager
 - [frontend-tools](frontend-tools/) - Frontend development tools including package managers (ni, pnpm, bun) via Home Manager
