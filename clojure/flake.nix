@@ -20,7 +20,6 @@
         packages = [
           pkgs.clojure # The Clojure CLI tools (`clj`)
           pkgs.jdk25_headless # Java Development Kit 25 (headless)
-          pkgs.git # Always useful for development
         ];
 
         envPackage = pkgs.buildEnv {
