@@ -12,7 +12,12 @@ This repository provides Nix flake templates for quick project initialization.
 nix flake show github:crbroughton/nix-flakes
 ```
 
-### Initialize from a Template
+**Note:** If you encounter errors about missing paths, refresh the flake cache:
+```bash
+nix flake metadata github:crbroughton/nix-flakes --refresh
+```
+
+### Initialise from a Template
 
 Use a specific template in your current directory:
 
