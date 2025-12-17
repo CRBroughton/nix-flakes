@@ -4,6 +4,10 @@
 default:
     @just --list
 
+# Creates the nim shell
+develop:
+    nix develop github:crbroughton/nix-flakes?dir=nim
+
 # Run the project (compile and execute)
 run:
     nim compile --run src/main.nim
