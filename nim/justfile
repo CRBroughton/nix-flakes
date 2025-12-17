@@ -1,0 +1,37 @@
+# Nim project commands
+
+# List available commands
+default:
+    @just --list
+
+# Run the project (compile and execute)
+run:
+    nim compile --run src/main.nim
+
+# Build debug version
+build:
+    nim compile src/main.nim
+
+# Build optimized release version
+release:
+    nim compile -d:release src/main.nim
+
+# Build and run with nimble
+nimble-run:
+    nimble run
+
+# Build with nimble
+nimble-build:
+    nimble build
+
+# Clean build artifacts
+clean:
+    rm -f src/main main
+    rm -rf nimcache/
+
+# Show project info
+info:
+    @echo "Nim Demo Project"
+    @echo "================"
+    @echo "Source: src/main.nim"
+    @echo "Config: main.nimble"
