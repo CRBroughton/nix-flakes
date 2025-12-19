@@ -41,6 +41,7 @@
         devPackages = [
           pkgs.clojure # The Clojure CLI tools (`clj`)
           pkgs.jdk25_headless # Java Development Kit 25 (headless)
+          pkgs.babashka # Low latency Clojure scripting alternative to JVM Clojure
         ];
 
         # [Step B] Create an "Installable" Environment (CRITICAL CONCEPT)
