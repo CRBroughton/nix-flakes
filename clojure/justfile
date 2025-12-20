@@ -1,0 +1,64 @@
+# Clojure Project Commands
+# Run 'just' to see all available commands
+# Add your custom project commands below!
+
+# List all available commands (default)
+default:
+    @just --list
+
+# Start a Clojure REPL
+repl:
+    clj
+
+# Start a Babashka REPL (faster startup)
+bb-repl:
+    bb --repl
+
+# Run a Clojure file with the CLI
+run file:
+    clj -M {{file}}
+
+# Run a Babashka script
+bb-run file:
+    bb {{file}}
+
+# Create a new Leiningen app project
+new-lein-app name:
+    lein new app {{name}}
+
+# Create a new Leiningen library project
+new-lein-lib name:
+    lein new {{name}}
+
+# Run the current Leiningen project
+lein-run:
+    lein run
+
+# Run Leiningen tests
+lein-test:
+    lein test
+
+# Build a Leiningen uberjar
+lein-build:
+    lein uberjar
+
+# Clean Leiningen build artifacts
+lein-clean:
+    lein clean
+
+# Run ClojureScript REPL (requires project setup)
+cljs-repl:
+    clj -M:cljs:dev
+
+# Format code with cljfmt (add dependency to project first)
+format:
+    clj -M:cljfmt fix
+
+# Lint code with clj-kondo
+lint:
+    clj-kondo --lint src
+
+# Example: Add your custom commands here
+# my-command:
+#     echo "Running my custom command"
+#     clj -M:my-alias

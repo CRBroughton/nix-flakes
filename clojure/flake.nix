@@ -43,6 +43,8 @@
           pkgs.jdk25_headless # Java Development Kit 25 (headless)
           pkgs.babashka # Low latency Clojure scripting alternative to JVM Clojure
           pkgs.leiningen # Used to setup new Clojure projects
+          pkgs.clj-kondo # Clojure linter
+          pkgs.just # Command runner for project-specific tasks
         ];
 
         # [Step B] Create an "Installable" Environment (CRITICAL CONCEPT)
@@ -75,6 +77,8 @@
             echo "  • JDK 25 (headless)"
             echo "  • Babashka (bb) - Fast Clojure scripting"
             echo "  • Leiningen (lein) - Project automation"
+            echo "  • clj-kondo - Clojure linter"
+            echo "  • Just (just) - Command runner"
             echo ""
             echo "Getting Started:"
             echo ""
@@ -91,6 +95,11 @@
             echo "  bb -e '(println \"Hello from Babashka!\")'"
             echo "  bb --repl"
             echo ""
+            echo "Project Commands:"
+            echo "  just          - List all available commands"
+            echo "  just <recipe> - Run a specific command"
+            echo ""
+            echo "Add your custom commands to the justfile!"
             echo "=========================================="
           '';
         };
