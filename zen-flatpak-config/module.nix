@@ -32,39 +32,55 @@ let
     "${part1}-${part2}-${part3}-${part4}-${part5}";
 
   # Process pins and auto-generate UUIDs from names
-  # First pass: add UUIDs and resolve folder parent references
-  processedPinsPass1 = mapAttrs (
-    name: pin:
-    pin
-    // {
-      id = generateUUID name;
-      # Convert folderParentUuid from name to UUID if specified
-      folderParentUuidResolved =
-        if pin.folderParentUuid != null then generateUUID pin.folderParentUuid else null;
-    }
-  ) cfg.pins;
+  # Flatten the nested structure - expand folders with their children
+  flattenedPins = lib.lists.flatten (
+    map (
+      pin:
+      let
+        folderUuid = generateUUID pin.name;
+        # Use title if provided, otherwise use name
+        displayTitle = if pin.title != null then pin.title else pin.name;
+        # Create the folder entry itself
+        folderEntry = pin // {
+          id = folderUuid;
+          title = displayTitle;
+          isGroup = true;
+          folderParentUuidResolved = null;
+          is_folder_collapsed = true; # Collapsed by default
+        };
+        # Create entries for all children in the folder
+        childEntries = map (
+          childPin:
+          childPin // {
+            id = generateUUID "${pin.name}-${childPin.title}";
+            folderParentUuidResolved = folderUuid;
+            isGroup = false;
+            # Inherit workspace from parent if child doesn't have its own
+            workspace = if childPin.workspace == null then pin.workspace else childPin.workspace;
+          }
+        ) pin.children;
+      in
+      if pin.isGroup then
+        # If it's a group/folder, return both the folder and its children
+        [ folderEntry ] ++ childEntries
+      else
+        # Regular pin (not a folder)
+        [ (pin // {
+          id = generateUUID pin.name;
+          title = displayTitle;
+          folderParentUuidResolved = null;
+          isGroup = false;
+        }) ]
+    ) cfg.pins
+  );
 
-  # Second pass: inherit workspace from parent folder and auto-assign positions
-  processedPinsList = attrValues processedPinsPass1;
+  # Assign positions to all pins based on their order
   processedPins = lib.lists.imap0 (
     index: pin:
-    let
-      # Find the parent folder if this pin is in a folder
-      parentFolder =
-        if pin.folderParentUuidResolved != null then
-          builtins.head (builtins.filter (p: p.id == pin.folderParentUuidResolved) processedPinsList)
-        else
-          null;
-      # Inherit workspace from parent if pin is in a folder and doesn't have its own workspace
-      inheritedWorkspace =
-        if parentFolder != null && pin.workspace == null then parentFolder.workspace else pin.workspace;
-    in
-    pin
-    // {
-      workspace = inheritedWorkspace;
-      position = index + 1; # Auto-assign position based on order in config
+    pin // {
+      position = index + 1;
     }
-  ) processedPinsList;
+  ) flattenedPins;
 
   # Generate user.js content from settings
   userJsContent =
@@ -128,69 +144,104 @@ in
       '';
     };
 
-    pinsForce = mkOption {
-      type = types.bool;
-      default = false;
-      description = "Whether to force-delete pins not declared in configuration";
-    };
-
     pins = mkOption {
-      type = types.attrsOf (
-        types.submodule (
-          { name, ... }:
-          {
-            options = {
-              url = mkOption {
-                type = types.str;
-                description = "URL of the pinned tab";
-              };
-              title = mkOption {
-                type = types.str;
-                default = name;
-                description = "Title of the pinned tab";
-              };
-              isEssential = mkOption {
-                type = types.bool;
-                default = false;
-                description = "Whether the tab is essential";
-              };
-              container = mkOption {
-                type = types.nullOr types.int;
-                default = null;
-                description = "Container ID for the pinned tab";
-              };
-              workspace = mkOption {
-                type = types.nullOr types.str;
-                default = null;
-                description = "Workspace UUID for the pinned tab";
-              };
-              isGroup = mkOption {
-                type = types.bool;
-                default = false;
-                description = "Whether this is a folder/group of pins";
-              };
-              folderParentUuid = mkOption {
-                type = types.nullOr types.str;
-                default = null;
-                description = "Parent folder name (pin name) for this pin";
-              };
+      type = types.listOf (
+        types.submodule {
+          options = {
+            name = mkOption {
+              type = types.str;
+              description = "Unique name/identifier for the pin or folder";
             };
-          }
-        )
-      );
-      default = { };
-      description = "Pinned tabs configuration (UUIDs and positions auto-generated from pin names and order)";
-      example = literalExpression ''
-        {
-          "GitHub" = {
-            url = "https://github.com";
-            isEssential = true;
-          };
-          "Example" = {
-            url = "https://example.com";
-            isEssential = false;
+            url = mkOption {
+              type = types.str;
+              default = "";
+              description = "URL of the pinned tab (empty for folders)";
+            };
+            title = mkOption {
+              type = types.nullOr types.str;
+              default = null;
+              description = "Title of the pinned tab or folder (defaults to name if not specified)";
+            };
+            isEssential = mkOption {
+              type = types.bool;
+              default = false;
+              description = "Whether the tab is essential (cannot be closed)";
+            };
+            container = mkOption {
+              type = types.nullOr types.int;
+              default = null;
+              description = "Container ID for the pinned tab";
+            };
+            workspace = mkOption {
+              type = types.nullOr types.str;
+              default = null;
+              description = "Workspace UUID for the pinned tab or folder";
+            };
+            isGroup = mkOption {
+              type = types.bool;
+              default = false;
+              description = "Whether this is a folder/group of pins";
+            };
+            children = mkOption {
+              type = types.listOf (
+                types.submodule {
+                  options = {
+                    title = mkOption {
+                      type = types.str;
+                      description = "Title of the pinned tab";
+                    };
+                    url = mkOption {
+                      type = types.str;
+                      description = "URL of the pinned tab";
+                    };
+                    isEssential = mkOption {
+                      type = types.bool;
+                      default = false;
+                      description = "Whether the tab is essential (cannot be closed)";
+                    };
+                    container = mkOption {
+                      type = types.nullOr types.int;
+                      default = null;
+                      description = "Container ID for the pinned tab";
+                    };
+                    workspace = mkOption {
+                      type = types.nullOr types.str;
+                      default = null;
+                      description = "Workspace UUID for the pinned tab (inherits from parent if null)";
+                    };
+                  };
+                }
+              );
+              default = [ ];
+              description = "Child pins within this folder (only used when isGroup = true)";
+            };
           };
         }
+      );
+      default = [ ];
+      description = "Pinned tabs configuration (UUIDs and positions auto-generated, order preserved from list)";
+      example = literalExpression ''
+        [
+          {
+            name = "GitHub";
+            url = "https://github.com";
+            isEssential = true;
+          }
+          {
+            name = "Social";
+            isGroup = true;
+            children = [
+              {
+                title = "Reddit";
+                url = "https://reddit.com";
+              }
+              {
+                title = "Twitter";
+                url = "https://twitter.com";
+              }
+            ];
+          }
+        ]
       '';
     };
 
@@ -275,7 +326,7 @@ in
       ''}
 
       # Setup pinned tabs via SQLite database
-      ${optionalString (cfg.pins != { }) ''
+      ${optionalString (cfg.pins != [ ]) ''
                 PLACES_DB="$PROFILE_DIR/places.sqlite"
 
                 if [ ! -f "$PLACES_DB" ]; then
@@ -283,9 +334,13 @@ in
                 else
                   $DRY_RUN_CMD echo "Setting up pinned tabs in places.sqlite"
 
-                  # Create zen_pins table if it doesn't exist
-                  ${pkgs.sqlite}/bin/sqlite3 "$PLACES_DB" << 'EOSQL'
-        CREATE TABLE IF NOT EXISTS zen_pins (
+                  # Delete and recreate the database from scratch
+                  $DRY_RUN_CMD echo "Deleting database and recreating with fresh pin configuration..."
+                  run rm -f "$PLACES_DB"
+
+                  # Create new database with zen_pins table
+                  run ${pkgs.sqlite}/bin/sqlite3 "$PLACES_DB" << 'EOSQL'
+        CREATE TABLE zen_pins (
           uuid TEXT PRIMARY KEY,
           title TEXT,
           url TEXT,
@@ -301,23 +356,11 @@ in
           folder_icon TEXT,
           folder_parent_uuid TEXT
         );
-        EOSQL
 
-                  # Force delete pins not in config if pinsForce is enabled
-                  ${optionalString cfg.pinsForce ''
-                                $DRY_RUN_CMD echo "Force-deleting pins not in configuration"
-                                ${pkgs.sqlite}/bin/sqlite3 "$PLACES_DB" << 'EOSQL'
-                    DELETE FROM zen_pins WHERE uuid NOT IN (
-                      ${concatStringsSep ",\n  " (map (pin: "'${pin.id}'") processedPins)}
-                    );
-                    EOSQL
-                  ''}
-
-                  # Insert or update all pins in a single transaction
-                  ${pkgs.sqlite}/bin/sqlite3 "$PLACES_DB" << 'EOSQL'
+        -- Insert all pins in a single transaction
         BEGIN TRANSACTION;
         ${concatMapStringsSep "\n" (pin: ''
-          INSERT OR REPLACE INTO zen_pins (
+          INSERT INTO zen_pins (
             uuid, title, url, container_id, workspace_uuid, position,
             is_essential, is_group, created_at, updated_at,
             edited_title, is_folder_collapsed, folder_icon, folder_parent_uuid
@@ -333,7 +376,7 @@ in
             strftime('%s', 'now'),
             strftime('%s', 'now'),
             0,
-            0,
+            ${if pin.is_folder_collapsed or false then "1" else "0"},
             NULL,
             ${if pin.folderParentUuidResolved != null then "'${pin.folderParentUuidResolved}'" else "NULL"}
           );'') processedPins}

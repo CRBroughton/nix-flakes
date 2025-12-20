@@ -75,14 +75,14 @@ outputs = { nixpkgs, home-manager, zen-flatpak-config, firefox-addons, ... }: {
       "browser.cache.disk.enable" = true;
     };
 
-    # Configure pinned tabs
-    pinsForce = true;  # Remove pins not declared here
-    pins = {
-      "GitHub" = {
+    # Configure pinned tabs (cleared and reapplied on each activation)
+    pins = [
+      {
+        name = "GitHub";
         url = "https://github.com/yourusername";
         isEssential = true;  # Cannot be closed
-      };
-    };
+      }
+    ];
 
     # Firefox policies
     policies = {
@@ -174,17 +174,18 @@ Run Zen Browser at least once to create the profile directory before applying th
       "browser.cache.disk.enable" = true;
     };
 
-    pinsForce = true;
-    pins = {
-      "GitHub" = {
+    pins = [
+      {
+        name = "GitHub";
         url = "https://github.com";
         isEssential = true;
-      };
-      "Gmail" = {
+      }
+      {
+        name = "Gmail";
         url = "https://mail.google.com";
         isEssential = false;
-      };
-    };
+      }
+    ];
 
     policies = {
       ExtensionSettings = {
@@ -218,29 +219,49 @@ Run Zen Browser at least once to create the profile directory before applying th
       "browser.cache.disk.enable" = true;
     };
 
-    pinsForce = true;
-    pins = {
-      "GitHub" = {
+    pins = [
+      {
+        name = "GitHub";
         url = "https://github.com/crbroughton";
         isEssential = true;  # Cannot be closed
-      };
-      "Monkeytype" = {
+      }
+      {
+        name = "Monkeytype";
         url = "https://monkeytype.com";
         isEssential = true;
-      };
+      }
       # Create a folder for organising pins
-      "Social" = {
-        url = "";  # Empty URL for folders
-        isEssential = false;
+      {
+        name = "Social";
         isGroup = true;  # Makes this a folder
-      };
-      # Pin inside the folder
-      "Reddit" = {
-        url = "https://reddit.com";
-        isEssential = false;
-        folderParentUuid = "Social";  # Links to the "Social" folder (must match pin name exactly)
-      };
-    };
+        children = [
+          {
+            title = "Reddit";
+            url = "https://reddit.com";
+            isEssential = false;
+          }
+          {
+            title = "Twitter";
+            url = "https://twitter.com";
+          }
+        ];
+      }
+      # Another example folder
+      {
+        name = "Development";
+        isGroup = true;
+        children = [
+          {
+            title = "Stack Overflow";
+            url = "https://stackoverflow.com";
+          }
+          {
+            title = "MDN";
+            url = "https://developer.mozilla.org";
+          }
+        ];
+      }
+    ];
 
     policies = {
       ExtensionSettings = {
