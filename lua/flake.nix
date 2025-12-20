@@ -38,7 +38,7 @@
 
         # [Step A] Define the Raw Packages
         # We construct a Lua interpreter with specific libraries pre-loaded.
-        luaPackages = pkgs.lua.withPackages (ps: [
+        luaPackages = pkgs.lua54Packages.lua.withPackages (ps: [
           ps.cjson
           ps.luafilesystem
           ps.luasocket
