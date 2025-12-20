@@ -62,7 +62,38 @@
 
         # OUTPUT 2: The Development Shell
         # Used by: `nix develop` to drop you into a temporary terminal with these tools.
-        devShell = pkgs.mkShell { buildInputs = devPackages; };
+        devShell = pkgs.mkShell {
+          buildInputs = devPackages;
+
+          shellHook = ''
+            echo "=========================================="
+            echo "Clojure Development Environment"
+            echo "=========================================="
+            echo ""
+            echo "Included tools:"
+            echo "  • Clojure CLI (clj, clojure)"
+            echo "  • JDK 25 (headless)"
+            echo "  • Babashka (bb) - Fast Clojure scripting"
+            echo "  • Leiningen (lein) - Project automation"
+            echo ""
+            echo "Getting Started:"
+            echo ""
+            echo "Create a new Leiningen project:"
+            echo "  lein new app my-project"
+            echo "  cd my-project"
+            echo "  lein run"
+            echo ""
+            echo "Create a new Clojure CLI project:"
+            echo "  mkdir my-project && cd my-project"
+            echo "  clj -M -e '(println \"Hello, Clojure!\")'"
+            echo ""
+            echo "Use Babashka for quick scripts:"
+            echo "  bb -e '(println \"Hello from Babashka!\")'"
+            echo "  bb --repl"
+            echo ""
+            echo "=========================================="
+          '';
+        };
       }
     )
 
