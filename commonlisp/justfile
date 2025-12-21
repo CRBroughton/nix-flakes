@@ -1,0 +1,87 @@
+# Common Lisp Project Commands
+# Run 'just' to see all available commands
+# Add your custom project commands below!
+
+# List all available commands (default)
+default:
+    @just --list
+
+# Start an enhanced REPL with readline support
+repl:
+    rlwrap sbcl
+
+# Start SBCL with Quicklisp loaded
+repl-ql:
+    rlwrap sbcl --load ~/quicklisp/setup.lisp
+
+# Install Quicklisp package manager
+install-quicklisp:
+    @echo "Installing Quicklisp..."
+    sbcl --non-interactive --load <(curl -O https://beta.quicklisp.org/quicklisp.lisp) --eval '(quicklisp-quickstart:install)' --eval '(ql:add-to-init-file)'
+    @echo "Quicklisp installed! Restart your REPL to use it."
+
+# Load and run a Lisp file
+run file:
+    sbcl --script {{file}}
+
+# Compile a Lisp file
+compile file:
+    sbcl --non-interactive --eval "(compile-file \"{{file}}\")" --quit
+
+# Load a file in the REPL
+load file:
+    sbcl --load {{file}}
+
+# Install a Quicklisp library
+install-lib name:
+    sbcl --non-interactive --load ~/quicklisp/setup.lisp --eval "(ql:quickload :{{name}})" --quit
+
+# Create a new project with Quicklisp
+new-project name:
+    sbcl --non-interactive \
+         --load ~/quicklisp/setup.lisp \
+         --eval '(ql:quickload :quickproject)' \
+         --eval '(quickproject:make-project "{{name}}/")' \
+         --quit
+    @echo "Project created in {{name}}/"
+
+# Run tests (assumes ASDF test system)
+test:
+    sbcl --non-interactive \
+         --load ~/quicklisp/setup.lisp \
+         --eval '(ql:quickload :your-system/tests)' \
+         --eval '(asdf:test-system :your-system)' \
+         --quit
+
+# Build a standalone executable (requires buildapp or similar)
+build output:
+    sbcl --non-interactive \
+         --load ~/quicklisp/setup.lisp \
+         --eval '(ql:quickload :your-system)' \
+         --eval '(sb-ext:save-lisp-and-die "{{output}}" :toplevel #'\''your-system:main :executable t)' \
+
+# Format code with cl-format (if installed)
+format file:
+    sbcl --non-interactive \
+         --load ~/quicklisp/setup.lisp \
+         --eval '(ql:quickload :cl-format)' \
+         --eval '(cl-format:format-file "{{file}}")' \
+         --quit
+
+# Update all Quicklisp libraries
+update-libs:
+    sbcl --non-interactive \
+         --load ~/quicklisp/setup.lisp \
+         --eval '(ql:update-all-dists)' \
+         --quit
+
+# Start Swank server for SLIME/Emacs integration (port 4005)
+swank:
+    sbcl --load ~/quicklisp/setup.lisp \
+         --eval '(ql:quickload :swank)' \
+         --eval '(swank:create-server :port 4005 :dont-close t)'
+
+# Example: Add your custom commands here
+# my-command:
+#     echo "Running my custom command"
+#     sbcl --eval '(your-code-here)'
