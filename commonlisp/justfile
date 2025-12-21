@@ -16,9 +16,28 @@ repl-ql:
 
 # Install Quicklisp package manager
 install-quicklisp:
-    @echo "Installing Quicklisp..."
-    sbcl --non-interactive --load <(curl -O https://beta.quicklisp.org/quicklisp.lisp) --eval '(quicklisp-quickstart:install)' --eval '(ql:add-to-init-file)'
-    @echo "Quicklisp installed! Restart your REPL to use it."
+    #!/usr/bin/env bash
+    if [ -f ~/quicklisp/setup.lisp ]; then \
+        echo "Quicklisp is already installed at ~/quicklisp/"; \
+        echo "To reinstall, remove ~/quicklisp/ first."; \
+        exit 0; \
+    fi
+    echo "Installing Quicklisp..."
+    curl -o /tmp/quicklisp.lisp https://beta.quicklisp.org/quicklisp.lisp
+    sbcl --non-interactive \
+         --load /tmp/quicklisp.lisp \
+         --eval '(quicklisp-quickstart:install)' \
+         --quit
+    rm -f /tmp/quicklisp.lisp
+    echo ""
+    echo "Quicklisp installed successfully!"
+    echo "Add the following to your ~/.sbclrc to load Quicklisp automatically:"
+    echo ""
+    echo "  #-quicklisp"
+    echo "  (let ((quicklisp-init (merge-pathnames \"quicklisp/setup.lisp\""
+    echo "                                         (user-homedir-pathname))))"
+    echo "    (when (probe-file quicklisp-init)"
+    echo "      (load quicklisp-init)))"
 
 # Load and run a Lisp file
 run file:
@@ -53,12 +72,11 @@ test:
          --eval '(asdf:test-system :your-system)' \
          --quit
 
-# Build a standalone executable (requires buildapp or similar)
+# Build a standalone executable from main.lisp
 build output:
     sbcl --non-interactive \
-         --load ~/quicklisp/setup.lisp \
-         --eval '(ql:quickload :your-system)' \
-         --eval '(sb-ext:save-lisp-and-die "{{output}}" :toplevel #'\''your-system:main :executable t)' \
+         --load src/main.lisp \
+         --eval '(sb-ext:save-lisp-and-die "{{output}}" :toplevel (function main) :executable t)'
 
 # Format code with cl-format (if installed)
 format file:

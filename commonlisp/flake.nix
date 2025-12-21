@@ -40,7 +40,6 @@
         # We construct a Common Lisp development environment.
         devPackages = [
           pkgs.sbcl # Steel Bank Common Lisp compiler
-          pkgs.lispPackages.quicklisp # Package manager for Common Lisp
           pkgs.rlwrap # Readline wrapper for better REPL experience
           pkgs.just # Command runner for project-specific tasks
         ];
@@ -72,7 +71,6 @@
             echo ""
             echo "Included tools:"
             echo "  • SBCL (sbcl) - Steel Bank Common Lisp"
-            echo "  • Quicklisp - Common Lisp package manager"
             echo "  • rlwrap - Enhanced REPL with readline support"
             echo "  • Just (just) - Command runner"
             echo ""
