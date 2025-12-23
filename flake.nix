@@ -50,6 +50,30 @@
         '';
       };
 
+      c = {
+        path = ./c;
+        description = "Modern C development environment with GCC, build tools, and debugging utilities";
+        welcomeText = ''
+          # Modern C Development Environment
+
+          This template provides a Nix flake for modern C development with:
+          - GCC 14 compiler and glibc
+          - Build systems: Make, CMake, Meson/Ninja
+          - Debugging: GDB, LLDB, Valgrind
+          - Code quality: clangd LSP, clang-format, clang-tidy, cppcheck
+          - VS Code integration
+
+          ## Usage
+
+          To enter the development shell:
+          ```
+          nix develop
+          ```
+
+          To use as a Home Manager module, add to your flake inputs and modules.
+        '';
+      };
+
       lua = {
         path = ./lua;
         description = "Lua development environment with common libraries and LSP";

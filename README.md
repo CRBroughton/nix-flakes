@@ -52,6 +52,7 @@ This is useful for:
 
 ### Available Templates
 
+- `c` - Modern C development environment with GCC, build tools, and debugging utilities
 - `clojure` - Clojure development environment with JDK 25 and VS Code integration
 - `elixir` - Elixir development environment with Erlang 28 and Elixir 1.19
 - `lua` - Lua development environment with common libraries and LSP
@@ -64,6 +65,7 @@ This is useful for:
 
 ## Flakes
 
+- [c](c/) - Modern C development environment with GCC 14, build systems (Make, CMake, Meson), debugging tools (GDB, LLDB, Valgrind), and LSP support via Home Manager
 - [clojure](clojure/) - Clojure development environment with JDK 25 and VS Code integration via Home Manager
 - [elixir](elixir/) - Elixir development environment with Erlang 28 and Elixir 1.19
 - [lua](lua/) - Lua development environment with essential packages and testing tools via Home Manager
