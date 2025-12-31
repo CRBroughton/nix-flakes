@@ -42,6 +42,7 @@
           pkgs.sbcl # Steel Bank Common Lisp compiler
           pkgs.rlwrap # Readline wrapper for better REPL experience
           pkgs.just # Command runner for project-specific tasks
+          pkgs.roswell # Lisp implementation installer/manager and launcher
         ];
 
         # [Step B] Create an "Installable" Environment (CRITICAL CONCEPT)
