@@ -122,7 +122,7 @@
             };
 
             programs.fish.shellInit = lib.mkIf config.programs.podman-config.enableDockerCompat ''
-              set -gx DOCKER_HOST "unix:///run/user/$UID/podman/podman.sock"
+              set -gx DOCKER_HOST "unix:///run/user/(id -u)/podman/podman.sock"
             '';
 
             # Configure lazydocker to use podman-compose
