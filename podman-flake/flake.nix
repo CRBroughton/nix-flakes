@@ -171,7 +171,7 @@
                 Type = "exec";
                 KillMode = "process";
                 Environment = "LOGGING=--log-level=info";
-                ExecStart = "${config.programs.podman-config.package}/bin/podman $LOGGING system service";
+                ExecStart = "${pkgs.podman}/bin/podman $LOGGING system service";
                 Restart = "on-failure";
               };
               Install = {

@@ -19,9 +19,13 @@ Add this flake as an input:
 ```nix
 {
   inputs = {
-    podman-flake.url = "path:/home/craig/nix-configuration/podman-flake";
-    # Or if hosted on GitHub:
-    # podman-flake.url = "github:yourusername/podman-flake";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    home-manager.url = "github:nix-community/home-manager";
+
+    podman-flake = {
+      url = "github:crbroughton/nix-flakes?dir=podman-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = { self, nixpkgs, home-manager, podman-flake, ... }: {
