@@ -215,6 +215,35 @@
         '';
       };
 
+      godot = {
+        path = ./godot;
+        description = "Godot 4 game development environment with Blender and Krita";
+        welcomeText = ''
+          # Godot 4 Game Development Environment
+
+          This template provides a Nix flake for Godot game development with:
+          - Godot 4 game engine
+          - Blender (3D modeling and animation)
+          - Krita (2D graphics and textures)
+          - Git with Git LFS support
+          - Wayland display support
+
+          ## Usage
+
+          To enter the development shell:
+          ```
+          nix develop
+          ```
+
+          To build the environment package:
+          ```
+          nix build
+          ```
+
+          To use as a Home Manager module, add to your flake inputs and modules.
+        '';
+      };
+
       default = {
         path = ./elixir;
         description = "Elixir development environment with Erlang 28 and Elixir 1.19";
