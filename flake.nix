@@ -117,6 +117,34 @@
         '';
       };
 
+      nix-format = {
+        path = ./nix-format;
+        description = "Nix dev tooling - nixd, nil, statix, deadnix, nixfmt";
+        welcomeText = ''
+          # Nix Development Tooling Environment
+
+          This template provides a Nix flake for Nix development with:
+          - nixd (Nix language server)
+          - nil (Nix language server)
+          - nixfmt (Nix code formatter)
+          - statix (Nix linter)
+          - deadnix (dead code finder)
+          - nix-format script (formats and lints all Nix files)
+
+          ## Usage
+
+          To enter the development shell:
+          ```
+          nix develop
+          ```
+
+          To format all Nix files in a project:
+          ```
+          nix run .#format
+          ```
+        '';
+      };
+
       frontend-tools = {
         path = ./frontend-tools;
         description = "Frontend development tools";

@@ -57,6 +57,7 @@ This is useful for:
 - `elixir` - Elixir development environment with Erlang 28 and Elixir 1.19
 - `lua` - Lua development environment with common libraries and LSP
 - `nim` - Nim development environment with VS Code integration
+- `nix-format` - Nix dev tooling with nixd, nil, statix, deadnix, nixfmt
 - `fish-shell` - Fish shell configuration
 - `frontend-tools` - Frontend development tools
 - `keyboard-layouts` - Custom keyboard layouts configuration
@@ -70,4 +71,5 @@ This is useful for:
 - [elixir](elixir/) - Elixir development environment with Erlang 28 and Elixir 1.19
 - [lua](lua/) - Lua development environment with essential packages and testing tools via Home Manager
 - [nim](nim/) - Nim development environment with VS Code integration via Home Manager
+- [nix-format](nix-format/) - Nix dev tooling with nixd, nil, nixfmt, statix, deadnix, and a nix-format script
 - [frontend-tools](frontend-tools/) - Frontend development tools including package managers (ni, pnpm, bun) via Home Manager
