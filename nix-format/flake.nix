@@ -21,12 +21,12 @@
           echo "Done"
         '';
 
-        packages = [
-          pkgs.nixd
-          pkgs.nil
-          pkgs.nixfmt
-          pkgs.statix
-          pkgs.deadnix
+        packages = with pkgs; [
+          nixd
+          nil
+          nixfmt
+          statix
+          deadnix
           nix-format-script
         ];
 
