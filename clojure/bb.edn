@@ -1,0 +1,7 @@
+{:paths ["src" "test"]
+ :tasks
+ {:requires ([tasks])
+
+  test
+  {:doc "Run bb tests"
+   :task (tasks/run-tests)}}}
