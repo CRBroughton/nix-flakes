@@ -1,4 +1,4 @@
-# Clojure Project Commands
+# Clojure + Leiningen Project Commands
 # Run 'just' to see all available commands
 # Add your custom project commands below!
 
@@ -10,17 +10,9 @@ default:
 repl:
     clj
 
-# Start a Babashka REPL (faster startup)
-bb-repl:
-    bb --repl
-
 # Run a Clojure file with the CLI
 run file:
     clj -M {{file}}
-
-# Run a Babashka script
-bb-run file:
-    bb {{file}}
 
 # Create a new Leiningen app project
 new-lein-app name:
@@ -45,10 +37,6 @@ lein-build:
 # Clean Leiningen build artifacts
 lein-clean:
     lein clean
-
-# Run ClojureScript REPL (requires project setup)
-cljs-repl:
-    clj -M:cljs:dev
 
 # Format code with cljfmt (add dependency to project first)
 format:

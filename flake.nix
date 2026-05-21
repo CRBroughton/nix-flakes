@@ -3,15 +3,41 @@
 
   outputs = { self }: {
     templates = {
-      clojure = {
-        path = ./clojure;
-        description = "Clojure development environment with JDK 25 and VS Code integration";
+      clojure-bb = {
+        path = ./clojure-bb;
+        description = "Clojure + Babashka development environment with JDK 25 and VS Code integration";
         welcomeText = ''
-          # Clojure Development Environment
+          # Clojure + Babashka Development Environment
 
-          This template provides a Nix flake for Clojure development with:
+          This template provides a Nix flake for Clojure/Babashka development with:
           - Clojure CLI tools (clj)
           - JDK 25 (headless)
+          - Babashka (bb) - fast scripting
+          - clj-kondo linter
+          - VS Code extension (Calva)
+
+          ## Usage
+
+          To enter the development shell:
+          ```
+          nix develop
+          ```
+
+          To use as a Home Manager module, add to your flake inputs and modules.
+        '';
+      };
+
+      clojure-lein = {
+        path = ./clojure-lein;
+        description = "Clojure + Leiningen development environment with JDK 25 and VS Code integration";
+        welcomeText = ''
+          # Clojure + Leiningen Development Environment
+
+          This template provides a Nix flake for Clojure/Leiningen development with:
+          - Clojure CLI tools (clj)
+          - JDK 25 (headless)
+          - Leiningen (lein) - project automation
+          - clj-kondo linter
           - VS Code extension (Calva)
 
           ## Usage

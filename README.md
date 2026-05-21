@@ -40,7 +40,8 @@ You can enter a development shell directly from a remote template without copyin
 nix develop github:crbroughton/nix-flakes?dir=elixir
 
 # Or for other templates
-nix develop github:crbroughton/nix-flakes?dir=clojure
+nix develop github:crbroughton/nix-flakes?dir=clojure-bb
+nix develop github:crbroughton/nix-flakes?dir=clojure-lein
 nix develop github:crbroughton/nix-flakes?dir=nim
 nix develop github:crbroughton/nix-flakes?dir=lua
 ```
@@ -53,7 +54,8 @@ This is useful for:
 ### Available Templates
 
 - `c` - Modern C development environment with GCC, build tools, and debugging utilities
-- `clojure` - Clojure development environment with JDK 25 and VS Code integration
+- `clojure-bb` - Clojure + Babashka development environment with JDK 25 and VS Code integration
+- `clojure-lein` - Clojure + Leiningen development environment with JDK 25 and VS Code integration
 - `elixir` - Elixir development environment with Erlang 28 and Elixir 1.19
 - `lua` - Lua development environment with common libraries and LSP
 - `nim` - Nim development environment with VS Code integration
@@ -67,7 +69,8 @@ This is useful for:
 ## Flakes
 
 - [c](c/) - Modern C development environment with GCC 14, build systems (Make, CMake, Meson), debugging tools (GDB, LLDB, Valgrind), and LSP support via Home Manager
-- [clojure](clojure/) - Clojure development environment with JDK 25 and VS Code integration via Home Manager
+- [clojure-bb](clojure-bb/) - Clojure + Babashka development environment with JDK 25 and VS Code integration via Home Manager
+- [clojure-lein](clojure-lein/) - Clojure + Leiningen development environment with JDK 25 and VS Code integration via Home Manager
 - [elixir](elixir/) - Elixir development environment with Erlang 28 and Elixir 1.19
 - [lua](lua/) - Lua development environment with essential packages and testing tools via Home Manager
 - [nim](nim/) - Nim development environment with VS Code integration via Home Manager

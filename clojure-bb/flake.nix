@@ -1,11 +1,11 @@
 {
-  description = "Clojure Development Flake: A hybrid package and module provider.";
+  description = "Clojure Babashka Development Flake: A hybrid package and module provider.";
 
   /*
     📘 NEW ENGINEER GUIDE: THE HYBRID FLAKE PATTERN
     ===============================================
     This file demonstrates a powerful Nix pattern that serves two purposes:
-    1. It is a Package Provider: It builds a custom Clojure environment.
+    1. It is a Package Provider: It builds a custom Clojure/Babashka environment.
     2. It is a Module Provider: It exports a Home Manager module to install that environment.
 
     The file is split into two halves, combined by the `//` merge operator.
@@ -37,12 +37,11 @@
         pkgs = nixpkgs.legacyPackages.${system};
 
         # [Step A] Define the Raw Packages
-        # We construct a Clojure development environment.
+        # We construct a Clojure/Babashka development environment.
         devPackages = [
           pkgs.clojure # The Clojure CLI tools (`clj`)
           pkgs.jdk25_headless # Java Development Kit 25 (headless)
           pkgs.babashka # Low latency Clojure scripting alternative to JVM Clojure
-          pkgs.leiningen # Used to setup new Clojure projects
           pkgs.clj-kondo # Clojure linter
           pkgs.just # Command runner for project-specific tasks
         ];
@@ -52,7 +51,7 @@
         # `pkgs.mkShell` (used for devShells) creates a shell script, which HM cannot install.
         # `pkgs.buildEnv` creates a proper directory structure (bin/, lib/) HM can use.
         clojureEnvPackage = pkgs.buildEnv {
-          name = "clojure-dev-env";
+          name = "clojure-bb-dev-env";
           paths = devPackages;
         };
 
@@ -69,23 +68,17 @@
 
           shellHook = ''
             echo "=========================================="
-            echo "Clojure Development Environment"
+            echo "Clojure + Babashka Development Environment"
             echo "=========================================="
             echo ""
             echo "Included tools:"
             echo "  • Clojure CLI (clj, clojure)"
             echo "  • JDK 25 (headless)"
             echo "  • Babashka (bb) - Fast Clojure scripting"
-            echo "  • Leiningen (lein) - Project automation"
             echo "  • clj-kondo - Clojure linter"
             echo "  • Just (just) - Command runner"
             echo ""
             echo "Getting Started:"
-            echo ""
-            echo "Create a new Leiningen project:"
-            echo "  lein new app my-project"
-            echo "  cd my-project"
-            echo "  lein run"
             echo ""
             echo "Create a new Clojure CLI project:"
             echo "  mkdir my-project && cd my-project"
@@ -121,15 +114,15 @@
         }:
         with lib;
         let
-          cfg = config.programs.clojure;
-          startupMessage = "Clojure development environment activated!";
+          cfg = config.programs.clojure-bb;
+          startupMessage = "Clojure + Babashka development environment activated!";
         in
         {
           # 1. THE INTERFACE
           # We define an option that users can toggle in their home.nix
-          # Usage: programs.clojure.enable = true;
-          options.programs.clojure = {
-            enable = mkEnableOption "Clojure development environment";
+          # Usage: programs.clojure-bb.enable = true;
+          options.programs.clojure-bb = {
+            enable = mkEnableOption "Clojure + Babashka development environment";
           };
 
           # 2. THE IMPLEMENTATION
@@ -156,7 +149,7 @@
             # C. Run Activation Scripts
             # -----------------------
             # Optional: Scripts to run after the generation switches.
-            home.activation.clojureInfo = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+            home.activation.clojureBbInfo = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
               echo "${startupMessage}"
             '';
           };
