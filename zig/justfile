@@ -1,0 +1,35 @@
+# Zig project commands
+
+# List available commands
+default:
+    @just --list
+
+# Enter the Zig dev shell
+develop:
+    nix develop github:crbroughton/nix-flakes?dir=zig
+
+# Run the project
+run:
+    zig run src/main.zig
+
+# Build debug binary
+build:
+    zig build-exe src/main.zig
+
+# Build optimised release binary
+release:
+    zig build-exe -O ReleaseFast src/main.zig
+
+# Run tests
+test:
+    zig test src/main.zig
+
+# Clean build artifacts
+clean:
+    rm -f main main.o
+
+# Show project info
+info:
+    @echo "Zig Demo Project"
+    @echo "================"
+    @echo "Source: src/main.zig"
