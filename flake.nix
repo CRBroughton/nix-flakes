@@ -298,6 +298,59 @@
         '';
       };
 
+      odin = {
+        path = ./odin;
+        description = "Odin development environment with raylib and OLS";
+        welcomeText = ''
+          # Odin Development Environment
+
+          This template provides a Nix flake for Odin development with:
+          - Odin compiler
+          - OLS (Odin Language Server)
+          - Raylib (via vendor:raylib)
+          - VS Code integration (format on save)
+          - Just command runner
+
+          ## Usage
+
+          To enter the development shell:
+          ```
+          nix develop
+          ```
+
+          To run the bunnymark demo:
+          ```
+          just run
+          ```
+        '';
+      };
+
+      zig = {
+        path = ./zig;
+        description = "Zig development environment with ZLS and version selection";
+        welcomeText = ''
+          # Zig Development Environment
+
+          This template provides a Nix flake for Zig development with:
+          - Zig compiler (latest, 0.14, or 0.13)
+          - ZLS (Zig Language Server, matched to compiler version)
+          - VS Code integration
+
+          ## Usage
+
+          To enter the development shell (latest):
+          ```
+          nix develop
+          ```
+
+          To use a specific version:
+          ```
+          nix develop .#"0.14"
+          nix develop .#"0.13"
+          ```
+        '';
+      };
+
       default = {
         path = ./elixir;
         description = "Elixir development environment with Erlang 28 and Elixir 1.19";
